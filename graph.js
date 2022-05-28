@@ -19,7 +19,7 @@ Array.prototype.insert = function (timestamp) {
             this.splice(i, 0, timestamp);
             return [i, false];
         }
-        if (datetime === new Date(timestamps[i])) {
+        if (timestamp === timestamps[i]) {
             return [i, true];
         }
     }
@@ -41,13 +41,13 @@ function add_new_point(form) {
     let time_input = form.querySelector('[name="time"]');
     let product_input = form.querySelector('[name="product"]');
     let time = time_input.value.split(":", 1), amount = product_input.value;
-    time = '2022-05-26 ' + (Number(time) + 1) + ':00';
+    time = '2022-05-26 ' + (Number(time) === 23 ? Number(time) : Number(time) + 1) + ':00';
     time_input.value = "";
     product_input.value = "";
     let [index, flag] = timestamps.insert(time);
 
     if (flag) {
-        product[index] += amount;
+        product[index] += Number(amount);
     } else {
         product.splice(index, 0, Number(amount));
     }
@@ -85,7 +85,7 @@ function init_data() {
     prediction = [];
     predict_points = points;
     predict_points = predict_points.filter((item) => (new Date(item) >= new Date(timestamps[timestamps.length - 1])));
-    console.log(predict_points);
+
 
     for (let i = 0; i < predict_points.length; i++) {
         prediction[i] = 0;
@@ -112,10 +112,7 @@ function init_data() {
     }
 
     predict_color = Number(plan) < prediction[prediction.length - 1] ? 'green' : 'brown';
-
-    console.log(Number(plan) < prediction[prediction.length - 1]);
-    console.log(plan);
-    console.log(prediction);
+    
 
     let plan_line = {
         x: [points[0], points[points.length - 1]],
@@ -170,7 +167,11 @@ function init_data() {
         }
     };
 
-
+    console.log(timestamps);
+    console.log(product);
+    console.log(summary);
+    
+    
     return [plan_line, product_per_hour, predict_line, product_summary];
 }
 
